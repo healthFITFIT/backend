@@ -20,6 +20,7 @@ public class ExerciseRecord {
     @Column(nullable = false)
     private Long userId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private String exerciseType;
 

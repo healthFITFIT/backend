@@ -24,10 +24,11 @@ public class ExerciseSet {
     @Column(nullable = false)
     private int reps;
 
-    @Column(nullable = false)
-    private int weight;
+    @Column
+    private Integer weight;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String exerciseName;
+    private ExerciseType exerciseType;
 
 }
