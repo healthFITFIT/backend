@@ -1,4 +1,4 @@
-package com.example.fitfit.api.exercise;
+package com.fitfit.server.api.workout.domain;
 
 public enum ExerciseType {
     SQUAT,
