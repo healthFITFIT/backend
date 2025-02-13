@@ -6,10 +6,9 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user")
-public class User {
+@Table(name = "member")
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +41,9 @@ public class User {
     @Column(nullable = false, length = 50)
     private String role;
 
+    // Builder 패턴을 적용한 생성자
     @Builder
-    public User(String email, String name, String password, String userProfile, boolean serviceAccept, String platformType, String role) {
+    public Member(String email, String name, String password, String userProfile, boolean serviceAccept, String platformType, String role) {
         this.email = email;
         this.name = name;
         this.password = password;
@@ -51,11 +51,12 @@ public class User {
         this.serviceAccept = serviceAccept;
         this.userRegisteredAt = LocalDate.now();
         this.platformType = platformType;
-        this.role = role != null ? role : "USER";
+        this.role = role != null ? role : "USER";  // 기본값 처리
     }
 
-    public User updateUser(UserUpdateRequest request) {
-        return User.builder()
+    // 기존 정보를 업데이트하는 메서드
+    public Member updateUser(UserUpdateRequest request) {
+        return Member.builder()
                 .email(this.email)
                 .name(request.name() != null ? request.name() : this.name)
                 .userProfile(request.userProfile() != null ? request.userProfile() : this.userProfile)
@@ -64,5 +65,13 @@ public class User {
                 .platformType(this.platformType)
                 .role(this.role)
                 .build();
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

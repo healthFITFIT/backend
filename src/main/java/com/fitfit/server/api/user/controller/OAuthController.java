@@ -1,34 +1,33 @@
 package com.fitfit.server.api.user.controller;
 
-import com.fitfit.server.api.user.dto.LoginResponse;
-import com.fitfit.server.global.auth.JwtTokenUtil;
-import com.fitfit.server.global.exception.ApiResponse;
+import com.fitfit.server.api.user.service.IdTokenVerfiy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/oauth")
 @RequiredArgsConstructor
 public class OAuthController {
 
-    private final JwtTokenUtil jwtTokenUtil;
 
-    @GetMapping("/success")
-    public ResponseEntity<ApiResponse<LoginResponse>> handleOAuth2Success(@AuthenticationPrincipal OAuth2User oauth2User) {
-        String email = oauth2User.getAttribute("email");
+    private final IdTokenVerfiy idTokenVerfiy;
 
-        if (email == null || email.isBlank()) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.fail("이메일을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
+    @PostMapping("/validateToken")
+    public ResponseEntity<?> validateToken(@RequestBody String idToken) {
+        try {
+            Map<String, Object> userDetails = idTokenVerfiy.authenticateUser(idToken);
+            return ResponseEntity.ok(userDetails);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (GeneralSecurityException | IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error validating the ID token: " + e.getMessage());
         }
-
-        String jwtToken = jwtTokenUtil.generateToken(email);
-        return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(jwtToken, "로그인 성공")));
     }
 }

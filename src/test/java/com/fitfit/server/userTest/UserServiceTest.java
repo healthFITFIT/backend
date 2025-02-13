@@ -1,10 +1,10 @@
 package com.fitfit.server.userTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fitfit.server.api.user.controller.UserController;
+import com.fitfit.server.api.user.controller.MemberController;
 import com.fitfit.server.api.user.dto.UserUpdateRequest;
-import com.fitfit.server.api.user.service.UserService;
-import com.fitfit.server.api.user.User;
+import com.fitfit.server.api.user.service.MemberService;
+import com.fitfit.server.api.user.Member;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,17 +18,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.doNothing;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest(MemberController.class)
 public class UserServiceTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Mock
-    private UserService userService;
+    private MemberService userService;
 
     @InjectMocks // @InjectMocks 추가
-    private UserController userController;
+    private MemberController userController;
 
     @Test
     public void testController() {
@@ -43,7 +43,7 @@ public class UserServiceTest {
                 "test@example.com", "New Name", "newProfile.jpg", "newPassword123", true
         );
 
-        User updatedUser = new User("test@example.com", "New Name", "newPassword123", "newProfile.jpg", true, "Platform", "USER");
+        Member updatedUser = new Member("test@example.com", "New Name", "newPassword123", "newProfile.jpg", true, "Platform", "USER");
 
         doNothing().when(userService).updateUser(email, updateRequest); // updateUser 모의 처리
 
