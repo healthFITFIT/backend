@@ -2,7 +2,6 @@ package com.fitfit.server.global.auth;
 
 import com.fitfit.server.api.user.Member;
 import com.fitfit.server.api.user.service.MemberService;
-import com.fitfit.server.global.auth.CustomOAuth2User;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;

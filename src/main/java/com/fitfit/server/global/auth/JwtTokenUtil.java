@@ -32,11 +32,12 @@ public class JwtTokenUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());

@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-
-
 @Entity
 @Table(name = "exercise_records")
 @Data
@@ -22,7 +20,7 @@ public class ExerciseRecord {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String exerciseType;
+    private ExerciseType exerciseType;
 
     @Column(nullable = false)
     private LocalTime duration;
