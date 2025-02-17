@@ -9,7 +9,6 @@ public record ApiResponse<T>(
         @Nullable T data,
         @Nullable ExceptionDto error
 ) {
-
     public static <T> ApiResponse<T> ok(@Nullable final T data) {
         return new ApiResponse<>(true, data, null);
     }
@@ -21,6 +20,7 @@ public record ApiResponse<T>(
     public static <T> ApiResponse<T> success(@Nullable final T data) {
         return new ApiResponse<>(true, data, null);
     }
+
     public static <T> ApiResponse<T> fail(final CustomException e) {
         return new ApiResponse<>(false, null, ExceptionDto.of(e.getErrorCode()));
     }
@@ -28,5 +28,4 @@ public record ApiResponse<T>(
     public static <T> ApiResponse<T> fail(String message, HttpStatus status) {
         return new ApiResponse<>(false, null, new ExceptionDto(status.value(), message));
     }
-
 }

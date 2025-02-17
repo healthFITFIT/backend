@@ -6,10 +6,11 @@ import com.fitfit.server.api.user.dto.UserUpdateRequest;
 import com.fitfit.server.api.user.Member;
 import com.fitfit.server.api.user.service.MemberService;
 import com.fitfit.server.global.auth.JwtTokenUtil;
+import com.fitfit.server.global.exception.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,17 +28,22 @@ public class MemberController {
         return ResponseEntity.ok(member);
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<UserResponse> getUserDetails(@PathVariable String email) {
-        Member member = memberService.findMemberByEmail(email);
+    @GetMapping("/userdetail")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserDetails(@RequestParam  String email) {
+        try {
+            Member member = memberService.findMemberByEmail(email);
 
-        UserResponse userResponse = new UserResponse(
-                member.getUserId(),
-                member.getEmail(),
-                member.getName(),
-                member.getRole()
-        );
-        return ResponseEntity.ok(userResponse);
+            UserResponse userResponse = new UserResponse(
+                    member.getUserId(),
+                    member.getEmail(),
+                    member.getName(),
+                    member.getRole()
+            );
+
+            return ResponseEntity.ok(ApiResponse.success(userResponse));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail("사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
+        }
     }
 
     // 회원 정보 업데이트

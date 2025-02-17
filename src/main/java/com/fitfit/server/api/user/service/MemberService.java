@@ -4,7 +4,6 @@ import com.fitfit.server.api.user.dto.UserSignUpRequest;
 import com.fitfit.server.api.user.dto.UserUpdateRequest;
 import com.fitfit.server.api.user.repository.MemberRepository;
 import com.fitfit.server.api.user.Member;
-import com.fitfit.server.global.auth.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,11 +18,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final IdTokenVerfiy idTokenVerfiy;
+    private final IdTokenVerify idTokenVerify;
 
     public Map<String, Object> login(String idToken) throws GeneralSecurityException, IOException, IOException {
 
-        Map<String, Object> userDetails = idTokenVerfiy.authenticateUser(idToken);
+        Map<String, Object> userDetails = idTokenVerify.authenticateUser(idToken);
 
         String email = (String) userDetails.get("email");
         Member member = memberRepository.findByEmail(email)

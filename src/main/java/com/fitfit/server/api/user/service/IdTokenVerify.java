@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class IdTokenVerfiy {
+public class IdTokenVerify {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
