@@ -2,6 +2,7 @@ package com.fitfit.server.api.user.service;
 
 import com.fitfit.server.api.user.dto.UserSignUpRequest;
 import com.fitfit.server.api.user.dto.UserUpdateRequest;
+import com.fitfit.server.api.user.dto.UserResponse;
 import com.fitfit.server.api.user.repository.MemberRepository;
 import com.fitfit.server.api.user.Member;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final IdTokenVerify idTokenVerify;
 
-    public Map<String, Object> login(String idToken) throws GeneralSecurityException, IOException, IOException {
+    // 로그인
+    public Map<String, Object> login(String idToken) throws GeneralSecurityException, IOException {
 
         Map<String, Object> userDetails = idTokenVerify.authenticateUser(idToken);
 
@@ -41,7 +43,8 @@ public class MemberService {
         return userDetails;
     }
 
-    public Member signUp(UserSignUpRequest request) {
+    // 회원가입
+    public void signUp(UserSignUpRequest request) {
         if (memberRepository.existsByEmail(request.email())) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
@@ -53,17 +56,38 @@ public class MemberService {
                 .build();
 
         memberRepository.save(newUser);
-        return newUser;
+    }
+
+    //회원정보 조회
+    public UserResponse getUserDetails(String email) {
+        Member member = findMemberByEmail(email);
+        return new UserResponse(
+                member.getUserId(),
+                member.getEmail(),
+                member.getName(),
+                member.getRole()
+        );
+    }
+
+    //email로 회원 정보 반환
+    public Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
 
     public void updateUser(String email, UserUpdateRequest request) {
         Member user = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        Member updatedUser = user.updateUser(request);
-        memberRepository.save(updatedUser);
+        // 기존의 회원 정보를 수정만 함
+        user.updateUser(request);
+
+        // 데이터베이스에 즉시 반영
+        memberRepository.saveAndFlush(user);  // saveAndFlush()를 사용하여 즉시 반영
     }
 
+
+    // 회원 탈퇴
     public void deleteUser(String email) {
         Member user = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -71,13 +95,8 @@ public class MemberService {
         memberRepository.delete(user);
     }
 
+    // 로그아웃
     public String logout(String token) {
         return "로그아웃 완료";
     }
-
-    public Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-    }
-
 }

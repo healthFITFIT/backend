@@ -12,7 +12,7 @@ public record UserSignUpRequest(
         String email,
 
         @NotBlank(message = "비밀번호를 입력하세요.")
-        @Size(min = 8, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
+        @Size(min = 4, message = "비밀번호는 최소 4자리 이상이어야 합니다.")
         String password,
 
         @NotBlank(message = "이름을 입력하세요.")

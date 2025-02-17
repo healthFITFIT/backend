@@ -44,29 +44,27 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String role;
 
-    // Builder 패턴을 적용한 생성자
     @Builder
-    public Member(String email, String name, String password, String userProfile, boolean serviceAccept, String platformType, String role) {
+    public Member(String email, String name, String password, String userProfile, boolean serviceAccept, String platformType, String role, LocalDate userRegisteredAt, LocalDate userModifiedAt) {
         this.email = email;
         this.name = name;
         this.password = password;
         this.userProfile = userProfile;
         this.serviceAccept = serviceAccept;
-        this.userRegisteredAt = LocalDate.now();
-        this.platformType = platformType != null ? platformType : "default";
+        this.userRegisteredAt = userRegisteredAt != null ? userRegisteredAt : LocalDate.now(); // null이 아니면 userRegisteredAt 사용, 아니면 기본값으로 설정
+        this.platformType = platformType != null ? platformType : "google";
         this.role = role != null ? role : "USER";
+        this.userModifiedAt = userModifiedAt;
     }
 
-    // 기존 정보를 업데이트하는 메서드
-    public Member updateUser(UserUpdateRequest request) {
-        return Member.builder()
-                .email(this.email)
-                .name(request.name() != null ? request.name() : this.name)
-                .userProfile(request.userProfile() != null ? request.userProfile() : this.userProfile)
-                .password(request.password() != null ? request.password() : this.password)
-                .serviceAccept(request.serviceAccept() != null ? Boolean.parseBoolean(request.serviceAccept()) : this.serviceAccept)
-                .role(this.role)
-                .build();
+    public void updateUser(UserUpdateRequest request) {
+        if (request.name() != null) {
+            this.name = request.name();
+        }
+        if (request.userProfile() != null) {
+            this.userProfile = request.userProfile();
+        }
+        this.userModifiedAt = LocalDate.now();
     }
 
     public String getEmail() {
@@ -79,10 +77,6 @@ public class Member {
 
     public String getRole() {
         return role;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     // Getter for name

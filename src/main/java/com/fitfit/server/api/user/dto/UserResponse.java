@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor // 생성자 자동 생성
+@AllArgsConstructor
 public class UserResponse {
     private Long userId;
     private String email;

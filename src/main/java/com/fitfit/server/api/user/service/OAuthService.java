@@ -85,7 +85,7 @@ public class OAuthService {
         Member newUser = Member.builder()
                 .email(email)
                 .name(name)
-                .password(passwordEncoder.encode("defaultPassword")) // 기본 패스워드 설정
+                .password(passwordEncoder.encode("defaultPassword"))
                 .userProfile(pictureUrl)
                 .serviceAccept(true)
                 .platformType("google")
