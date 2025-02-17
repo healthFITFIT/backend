@@ -1,8 +1,8 @@
 package com.fitfit.server.api.user.controller;
 
-import com.fitfit.server.api.user.dto.UserResponse;
-import com.fitfit.server.api.user.dto.UserSignUpRequest;
-import com.fitfit.server.api.user.dto.UserUpdateRequest;
+import com.fitfit.server.api.user.dto.MemberResponse;
+import com.fitfit.server.api.user.dto.MemberSignUpRequest;
+import com.fitfit.server.api.user.dto.MemberUpdateRequest;
 import com.fitfit.server.api.user.service.MemberService;
 import com.fitfit.server.global.auth.JwtTokenUtil;
 import com.fitfit.server.global.exception.ApiResponse;
@@ -20,16 +20,16 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtTokenUtil jwtTokenUtil;
 
-    // 회원가입 (회원 정보를 생성)
+    // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<String> registerUser(@RequestBody @Valid UserSignUpRequest request) {
+    public ResponseEntity<ApiResponse<String>> registerUser(@RequestBody @Valid MemberSignUpRequest request) {
         memberService.signUp(request);
-        return ResponseEntity.ok("회원가입이 완료되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
     }
 
-    // 회원 정보 조회 (로그인한 사용자만 자신의 정보 조회 가능)
+    // 회원 정보 조회
     @GetMapping("/userdetail")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<MemberResponse>> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
         String email = jwtTokenUtil.extractUsername(token);
         if (email == null) {
@@ -37,46 +37,46 @@ public class MemberController {
         }
 
         try {
-            UserResponse userResponse = memberService.getUserDetails(email);
+            MemberResponse userResponse = memberService.getUserDetails(email);
             return ResponseEntity.ok(ApiResponse.success(userResponse));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(ApiResponse.fail("사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
         }
     }
 
-    // 회원 정보 업데이트 (로그인한 사용자만 자신의 정보 수정 가능)
+    // 회원 정보 업데이트
     @PatchMapping("/update")
-    public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateRequest request,
-                                             @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<String>> updateUser(@Valid @RequestBody MemberUpdateRequest request,
+                                                          @RequestHeader("Authorization") String authorizationHeader) {
 
         String token = authorizationHeader.replace("Bearer ", "");
         String email = jwtTokenUtil.extractUsername(token);
         if (email == null) {
-            return ResponseEntity.badRequest().body("이메일을 추출할 수 없습니다.");
+            return ResponseEntity.badRequest().body(ApiResponse.fail("이메일을 추출할 수 없습니다.", HttpStatus.BAD_REQUEST));
         }
 
         memberService.updateUser(email, request);
-        return ResponseEntity.ok("회원정보가 수정되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success("회원정보가 수정되었습니다."));
     }
 
-    // 회원 탈퇴 (로그인한 사용자만 탈퇴 가능)
+    // 회원 탈퇴
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<String>> deleteUser(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
         String email = jwtTokenUtil.extractUsername(token);
         if (email == null) {
-            return ResponseEntity.badRequest().body("이메일을 추출할 수 없습니다.");
+            return ResponseEntity.badRequest().body(ApiResponse.fail("이메일을 추출할 수 없습니다.", HttpStatus.BAD_REQUEST));
         }
 
         memberService.deleteUser(email);
-        return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success("회원탈퇴가 완료되었습니다."));
     }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
         memberService.logout(token);
-        return ResponseEntity.ok("로그아웃 완료되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success("로그아웃 완료되었습니다."));
     }
 }

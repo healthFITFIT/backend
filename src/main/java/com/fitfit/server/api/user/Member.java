@@ -1,6 +1,6 @@
 package com.fitfit.server.api.user;
 
-import com.fitfit.server.api.user.dto.UserUpdateRequest;
+import com.fitfit.server.api.user.dto.MemberUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -57,7 +57,7 @@ public class Member {
         this.userModifiedAt = userModifiedAt;
     }
 
-    public void updateUser(UserUpdateRequest request) {
+    public void updateUser(MemberUpdateRequest request) {
         if (request.name() != null) {
             this.name = request.name();
         }

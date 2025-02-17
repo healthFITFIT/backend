@@ -1,8 +1,8 @@
 package com.fitfit.server.api.user.service;
 
-import com.fitfit.server.api.user.dto.UserSignUpRequest;
-import com.fitfit.server.api.user.dto.UserUpdateRequest;
-import com.fitfit.server.api.user.dto.UserResponse;
+import com.fitfit.server.api.user.dto.MemberSignUpRequest;
+import com.fitfit.server.api.user.dto.MemberUpdateRequest;
+import com.fitfit.server.api.user.dto.MemberResponse;
 import com.fitfit.server.api.user.repository.MemberRepository;
 import com.fitfit.server.api.user.Member;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ public class MemberService {
     }
 
     // 회원가입
-    public void signUp(UserSignUpRequest request) {
+    public void signUp(MemberSignUpRequest request) {
         if (memberRepository.existsByEmail(request.email())) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
@@ -59,9 +59,9 @@ public class MemberService {
     }
 
     //회원정보 조회
-    public UserResponse getUserDetails(String email) {
+    public MemberResponse getUserDetails(String email) {
         Member member = findMemberByEmail(email);
-        return new UserResponse(
+        return new MemberResponse(
                 member.getUserId(),
                 member.getEmail(),
                 member.getName(),
@@ -75,7 +75,7 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
 
-    public void updateUser(String email, UserUpdateRequest request) {
+    public void updateUser(String email, MemberUpdateRequest request) {
         Member user = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
