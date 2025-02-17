@@ -2,7 +2,10 @@ package com.fitfit.server.api.user;
 
 import com.fitfit.server.api.user.dto.UserUpdateRequest;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
 @Entity
@@ -14,20 +17,20 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false, length = 255, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String password;
 
-    @Column(length = 255)
+    @Column
     private String userProfile;
 
     @Column(nullable = false)
-    private boolean serviceAccept;
+    private boolean serviceAccept = true; // 기본값 true로 설정
 
     @Column(nullable = false)
     private LocalDate userRegisteredAt;
@@ -50,8 +53,8 @@ public class Member {
         this.userProfile = userProfile;
         this.serviceAccept = serviceAccept;
         this.userRegisteredAt = LocalDate.now();
-        this.platformType = platformType;
-        this.role = role != null ? role : "USER";  // 기본값 처리
+        this.platformType = platformType != null ? platformType : "default";
+        this.role = role != null ? role : "USER";
     }
 
     // 기존 정보를 업데이트하는 메서드
@@ -61,8 +64,7 @@ public class Member {
                 .name(request.name() != null ? request.name() : this.name)
                 .userProfile(request.userProfile() != null ? request.userProfile() : this.userProfile)
                 .password(request.password() != null ? request.password() : this.password)
-                .serviceAccept(request.serviceAccept() != null ? request.serviceAccept() : this.serviceAccept)
-                .platformType(this.platformType)
+                .serviceAccept(request.serviceAccept() != null ? Boolean.parseBoolean(request.serviceAccept()) : this.serviceAccept)
                 .role(this.role)
                 .build();
     }
@@ -71,7 +73,21 @@ public class Member {
         return this.email;
     }
 
+    public Long getUserId() {
+        return this.userId;
+    }
+
     public String getRole() {
         return role;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    // Getter for name
+    public String getName() {
+        return name;
+    }
+
 }

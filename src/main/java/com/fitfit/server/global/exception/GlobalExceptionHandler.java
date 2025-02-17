@@ -1,34 +1,50 @@
 package com.fitfit.server.global.exception;
 
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // 존재하지 않는 요청에 대한 예외
+
     @ExceptionHandler(value = {NoHandlerFoundException.class, HttpRequestMethodNotSupportedException.class})
-    public ApiResponse<?> handleNoPageFoundException(Exception e) {
+    public ResponseEntity<ApiResponse<?>> handleNoPageFoundException(Exception e) {
         log.error("GlobalExceptionHandler catch NoHandlerFoundException : {}", e.getMessage());
-        return ApiResponse.fail(new CustomException(ErrorCode.NOT_FOUND_END_POINT));
+        ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.NOT_FOUND_END_POINT,e.getMessage()));
+        return ResponseEntity.status(ErrorCode.NOT_FOUND_END_POINT.getHttpStatus()).body(response);
     }
 
-
-    // 커스텀 예외
     @ExceptionHandler(value = {CustomException.class})
-    public ApiResponse<?> handleCustomException(CustomException e) {
+    public ResponseEntity<ApiResponse<?>> handleCustomException(CustomException e) {
         log.error("handleCustomException() in GlobalExceptionHandler throw CustomException : {}", e.getMessage());
-        return ApiResponse.fail(e);
+        ApiResponse<?> response = ApiResponse.fail(e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(response);
     }
 
-    // 기본 예외
+    // GeneralSecurityException 및 IOException 처리 추가
+    @ExceptionHandler(value = {GeneralSecurityException.class, IOException.class})
+    public ResponseEntity<ApiResponse<?>> handleSecurityAndIoExceptions(Exception e) {
+        log.error("GeneralSecurityException or IOException in GlobalExceptionHandler: {}", e.getMessage());
+        ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage()));
+        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
+    }
+
+
     @ExceptionHandler(value = {Exception.class})
-    public ApiResponse<?> handleException(Exception e) {
+    public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
         log.error("handleException() in GlobalExceptionHandler throw Exception : {}", e.getMessage());
         e.printStackTrace();
-        return ApiResponse.fail(new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+        ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.INTERNAL_SERVER_ERROR,e.getMessage()));
+        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
     }
+
+
 }

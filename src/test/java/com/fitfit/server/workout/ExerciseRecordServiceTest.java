@@ -1,8 +1,6 @@
-package com.example.fitfit.service;
+package com.fitfit.server.workout;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ExerciseRecordServiceTest {
 

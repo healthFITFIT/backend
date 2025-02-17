@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public record UserRequest (
         @NotBlank @Email String email,
-        @NotBlank @Size(min = 2, max = 255) String name,
-        @NotBlank @Size(min = 8, max = 255) String password,
+        @NotBlank String name,
+        @NotBlank String password,
         String userProfile,
         boolean serviceAccept,
         @NotBlank String platformType

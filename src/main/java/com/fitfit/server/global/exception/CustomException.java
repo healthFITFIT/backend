@@ -1,14 +1,22 @@
 package com.fitfit.server.global.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
-public class CustomException extends RuntimeException{
+// CustomException.java
+public class CustomException extends RuntimeException {
     private final ErrorCode errorCode;
+    private final String message;
 
+    public CustomException(ErrorCode errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
+        this.message = message;
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
+
+    @Override
     public String getMessage() {
-        return errorCode.getMessage();
+        return message;
     }
 }

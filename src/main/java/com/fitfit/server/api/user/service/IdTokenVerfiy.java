@@ -25,14 +25,22 @@ public class IdTokenVerfiy {
     private String clientId;
 
     public Map<String, Object> authenticateUser(String idToken) throws GeneralSecurityException, IOException {
-        GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);  // 직접 생성하지 않고 주입받은 verifier 사용
+        GoogleIdToken googleIdToken;
+        try {
+            googleIdToken = googleIdTokenVerifier.verify(idToken);
+        } catch (GeneralSecurityException | IOException e) {
+            log.error("ID token 확인 에러", e);
+            throw e;
+        }
+
         if (googleIdToken != null) {
             GoogleIdToken.Payload payload = googleIdToken.getPayload();
             String userId = payload.getSubject();
             String email = payload.getEmail();
             String name = (String) payload.get("name");
             String pictureUrl = (String) payload.get("picture");
-            log.info(email);
+
+            log.info("Google OAuth: email = {}", email);
 
             String accessToken = jwtTokenUtil.generateToken(email);
 
@@ -45,7 +53,7 @@ public class IdTokenVerfiy {
 
             return userDetails;
         } else {
-            throw new IllegalArgumentException("Invalid ID token.");
+            throw new IllegalArgumentException(" 유효하지 않은 ID token 입니다.");
         }
     }
 }
