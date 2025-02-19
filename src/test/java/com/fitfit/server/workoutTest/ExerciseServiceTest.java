@@ -86,7 +86,7 @@ class ExerciseServiceTest {
         when(exerciseTypeRepository.findByName("SQUAT")).thenReturn(Optional.of(exerciseType));
 
         // When
-        exerciseService.saveRecord(request);
+        exerciseService.saveRecord(request, userId);
 
         // Then
         verify(exerciseRecordRepository, times(1)).save(any(ExerciseRecord.class));
@@ -186,4 +186,3 @@ class ExerciseServiceTest {
         verify(exerciseSetRepository, times(1)).save(exerciseSet);
     }
 }
-

@@ -14,11 +14,14 @@ public class ExerciseRecordController {
     private final ExerciseService exerciseService;
 
     @PostMapping
-    public ResponseEntity<String> saveRecord(@RequestBody ExerciseRecordRequest request) {
+    public ResponseEntity<String> saveRecord(
+            @RequestBody ExerciseRecordRequest request,
+            @RequestParam Long userId //TODO  @AuthenticationPrincipal로 리팩토링
+    ) {
         try {
-            exerciseService.saveRecord(request);
+            exerciseService.saveRecord(request, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body("Exercise record saved successfully");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save exercise record");
         }
     }
@@ -32,4 +35,3 @@ public class ExerciseRecordController {
         return ResponseEntity.ok("Exercise record deleted successfully");
     }
 }
-

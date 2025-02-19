@@ -30,7 +30,7 @@ public class ExerciseRecord {
     @Column(nullable = false)
     private LocalDate createdAt;
 
-    //ExerciseRecord 삭제 시 연관된 ExerciseSet도 삭제
     @OneToMany(mappedBy = "exerciseRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExerciseSet> exerciseSets;
+
 }
