@@ -12,23 +12,14 @@ public class ExerciseSet {
     private Long setId;
 
     @ManyToOne
-    @JoinColumn(name = "exercise_record_id", nullable = false)
+    @JoinColumn(name = "recordId")
     private ExerciseRecord exerciseRecord;
 
-    @Column(nullable = false)
-    private Long userId;
-
-    @Column(nullable = false)
-    private int setNumber;
-
-    @Column(nullable = false)
-    private int reps;
-
-    @Column
-    private Integer weight;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "exerciseType")
     private ExerciseType exerciseType;
+
+    private int reps;
+    private float weight;
 
 }
