@@ -29,14 +29,16 @@ public class ExerciseService {
 
     //운동 기록 저장
     @Transactional
-    public void saveRecord(ExerciseRecordRequest request) {
-        Member member = memberRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public void saveRecord(ExerciseRecordRequest request, Long userId) {
+        Member user = memberRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
 
+        // 새로운 운동 기록 생성
         ExerciseRecord exerciseRecord = new ExerciseRecord();
         exerciseRecord.setCreatedAt(request.getDate());
         exerciseRecord.setDuration(request.getDuration());
-        exerciseRecord.setUserId(member);
+
+        exerciseRecord.setUserId(user);
 
         exerciseRecordRepository.save(exerciseRecord);
 
