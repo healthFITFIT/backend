@@ -1,7 +1,9 @@
 package com.fitfit.server.api.workout.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,29 +11,20 @@ import java.util.List;
 
 @Entity
 @Table(name = "exercise_records")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class ExerciseRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long exerciseRecordId;
+    private Long recordId;
 
     @Column(nullable = false)
     private Long userId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ExerciseType exerciseType;
 
     @Column(nullable = false)
     private LocalTime duration;
 
     @Column(nullable = false)
-    private LocalDate startTime;
-
-    @Column(nullable = false)
     private LocalDate createdAt;
-
-    @OneToMany(mappedBy = "exerciseRecord", cascade = CascadeType.ALL)
-    private List<ExerciseSet> sets;
-
 }
