@@ -31,10 +31,10 @@ public class OAuthController {
             Map<String, Object> userDetails = oAuthService.authenticateUser(idToken);
             return ResponseEntity.ok(ApiResponse.success(userDetails));
         } catch (IllegalArgumentException e) {
-            ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.UNAUTHORIZED, "Invalid token"));
+            ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.UNAUTHORIZED, "승인되지 않은 접근입니다."));
             return ResponseEntity.status(ErrorCode.UNAUTHORIZED.getHttpStatus()).body(response);
         } catch (Exception e) {
-            ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "Error validating token"));
+            ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."));
             return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
         }
     }
