@@ -1,5 +1,6 @@
 package com.fitfit.server.api.workout.domain;
 
+import com.fitfit.server.api.user.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,12 +20,17 @@ public class ExerciseRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recordId;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    private Member userId;
 
     @Column(nullable = false)
-    private LocalTime duration;
+    private int duration;
 
     @Column(nullable = false)
     private LocalDate createdAt;
+
+    //ExerciseRecord 삭제 시 연관된 ExerciseSet도 삭제
+    @OneToMany(mappedBy = "exerciseRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExerciseSet> exerciseSets;
 }
