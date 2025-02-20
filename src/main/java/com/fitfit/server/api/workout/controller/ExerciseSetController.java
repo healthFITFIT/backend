@@ -16,7 +16,7 @@ public class ExerciseSetController {
     private final ExerciseService exerciseService;
 
     //세트 삭제
-    @DeleteMapping("/{setId}")
+    @DeleteMapping("/delete/{setId}")
     public ResponseEntity<String> deleteExerciseSet(
             @PathVariable Long recordId,
             @PathVariable Long setId,
@@ -33,7 +33,7 @@ public class ExerciseSetController {
         }
     }
 
-    @PutMapping("/{setId}")
+    @PutMapping("/update/{setId}")
     public ResponseEntity<String> updateExerciseSet(
             @PathVariable Long recordId,
             @PathVariable Long setId,

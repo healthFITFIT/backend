@@ -185,5 +185,55 @@ class ExerciseServiceTest {
         assertEquals(25.0f, exerciseSet.getWeight());
         verify(exerciseSetRepository, times(1)).save(exerciseSet);
     }
+
+    @Test
+    void getRecordsByDate_shouldReturnExerciseRecordsForUser() {
+        // Given
+        Long userId = 1L;
+        LocalDate date = LocalDate.of(2024, 2, 19);
+
+        Member member = Mockito.mock(Member.class);
+        when(member.getUserId()).thenReturn(userId);
+
+        ExerciseRecord record1 = new ExerciseRecord();
+        record1.setRecordId(1L);
+        record1.setUserId(member);
+        record1.setCreatedAt(date);
+
+        ExerciseRecord record2 = new ExerciseRecord();
+        record2.setRecordId(2L);
+        record2.setUserId(member);
+        record2.setCreatedAt(date);
+
+        List<ExerciseRecord> records = List.of(record1, record2);
+
+        when(exerciseRecordRepository.findByUserIdAndCreatedAt(userId, date)).thenReturn(records);
+
+        // When
+        ExerciseRecord result = exerciseService.getRecordByDate(userId, date);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(record1.getRecordId(), result.get(0).getRecordId());
+        assertEquals(record2.getRecordId(), result.get(1).getRecordId());
+    }
+
+    @Test
+    void getRecordsByDate_shouldReturnEmptyListIfNoRecordsExist() {
+        // Given
+        Long userId = 1L;
+        LocalDate date = LocalDate.of(2024, 2, 19);
+
+        when(exerciseRecordRepository.findByUserIdAndCreatedAt(userId, date)).thenReturn(Collections.emptyList());
+
+        // When
+        List<ExerciseRecord> result = exerciseService.getRecordByDate(userId, date);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
 }
 
