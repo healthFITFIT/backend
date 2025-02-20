@@ -14,14 +14,11 @@ public class ExerciseRecordController {
     private final ExerciseService exerciseService;
 
     @PostMapping
-    public ResponseEntity<String> saveRecord(
-            @RequestBody ExerciseRecordRequest request,
-            @RequestParam Long userId //TODO  @AuthenticationPrincipal로 리팩토링
-    ) {
+    public ResponseEntity<String> saveRecord(@RequestBody ExerciseRecordRequest request) {
         try {
-            exerciseService.saveRecord(request, userId);
+            exerciseService.saveRecord(request);
             return ResponseEntity.status(HttpStatus.CREATED).body("Exercise record saved successfully");
-        } catch (Exception e) {
+        }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save exercise record");
         }
     }
@@ -29,7 +26,7 @@ public class ExerciseRecordController {
     @DeleteMapping("/{recordId}")
     public ResponseEntity<String> deleteExerciseRecord(
             @PathVariable Long recordId,
-            @RequestParam Long userId // 사용자의 본인 기록만 삭제하도록 userId 필요
+            @RequestParam Long userId
     ) {
         exerciseService.deleteRecord(recordId, userId);
         return ResponseEntity.ok("Exercise record deleted successfully");

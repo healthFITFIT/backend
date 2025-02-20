@@ -22,24 +22,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ExerciseService {
+
     private final ExerciseRecordRepository exerciseRecordRepository;
     private final ExerciseSetRepository exerciseSetRepository;
     private final ExerciseTypeRepository exerciseTypeRepository;
     private final MemberRepository memberRepository;
 
-    //운동 기록 저장
     @Transactional
-    public void saveRecord(ExerciseRecordRequest request, Long userId) {
-        Member user = memberRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+    public void saveRecord(ExerciseRecordRequest request) {
+        Member member = memberRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 새로운 운동 기록 생성
-        ExerciseRecord exerciseRecord = new ExerciseRecord();
-        exerciseRecord.setCreatedAt(request.getDate());
-        exerciseRecord.setDuration(request.getDuration());
-
-        exerciseRecord.setUserId(user);
-
+        ExerciseRecord exerciseRecord = new ExerciseRecord(member, request.getDuration(), request.getDate());
         exerciseRecordRepository.save(exerciseRecord);
 
         for (ExerciseRequest exerciseRequest : request.getExercises()) {
@@ -58,22 +52,18 @@ public class ExerciseService {
         }
     }
 
-    //운동 기록 삭제
     @Transactional
     public void deleteRecord(Long recordId, Long userId) {
-        // 기록이 존재하는지 확인
         ExerciseRecord record = exerciseRecordRepository.findById(recordId)
                 .orElseThrow(() -> new RuntimeException("ExerciseRecord not found"));
 
-        // 본인의 기록인지 확인 (또는 관리자 권한 체크)
-        if (!record.getUserId().getUserId().equals(userId)) {
+        if (!record.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("You are not allowed to delete this record");
         }
 
         exerciseRecordRepository.delete(record);
     }
 
-    //세트 삭제
     public void deleteSet(Long setId, Long recordId, Long userId) {
         ExerciseSet exerciseSet = exerciseSetRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException("Exercise set not found"));
@@ -82,15 +72,14 @@ public class ExerciseService {
             throw new IllegalArgumentException("Set does not belong to the given record");
         }
 
-        if (!exerciseSet.getExerciseRecord().getUserId().getUserId().equals(userId)) {
+        if (!exerciseSet.getExerciseRecord().getUser().getUserId().equals(userId)) {
             throw new AccessDeniedException("You are not allowed to delete this set");
         }
 
         exerciseSetRepository.delete(exerciseSet);
     }
 
-    //세트 수정
-    public void updateSet(Long setId, Long recordId, Long userId, SetRequest request){
+    public void updateSet(Long setId, Long recordId, Long userId, SetRequest request) {
         ExerciseSet exerciseSet = exerciseSetRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException("Exercise set not found"));
 
@@ -98,8 +87,8 @@ public class ExerciseService {
             throw new IllegalArgumentException("Set does not belong to the given record");
         }
 
-        if (!exerciseSet.getExerciseRecord().getUserId().getUserId().equals(userId)) {
-            throw new AccessDeniedException("You are not allowed to delete this set");
+        if (!exerciseSet.getExerciseRecord().getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("You are not allowed to update this set");
         }
 
         exerciseSet.setReps(request.getReps());
