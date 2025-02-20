@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -21,8 +20,8 @@ public class ExerciseRecord {
     private Long recordId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
-    private Member userId;
+    @JoinColumn(name = "userId")
+    private Member user;
 
     @Column(nullable = false)
     private int duration;
@@ -30,7 +29,12 @@ public class ExerciseRecord {
     @Column(nullable = false)
     private LocalDate createdAt;
 
-    //ExerciseRecord 삭제 시 연관된 ExerciseSet도 삭제
     @OneToMany(mappedBy = "exerciseRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExerciseSet> exerciseSets;
+
+    public ExerciseRecord(Member user, int duration, LocalDate createdAt) {
+        this.user = user;
+        this.duration = duration;
+        this.createdAt = createdAt;
+    }
 }

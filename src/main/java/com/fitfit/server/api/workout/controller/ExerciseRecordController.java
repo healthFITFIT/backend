@@ -30,7 +30,7 @@ public class ExerciseRecordController {
     @DeleteMapping("/delete/{recordId}")
     public ResponseEntity<String> deleteExerciseRecord(
             @PathVariable Long recordId,
-            @RequestParam Long userId // 사용자의 본인 기록만 삭제하도록 userId 필요
+            @RequestParam Long userId
     ) {
         exerciseService.deleteRecord(recordId, userId);
         return ResponseEntity.ok("Exercise record deleted successfully");
