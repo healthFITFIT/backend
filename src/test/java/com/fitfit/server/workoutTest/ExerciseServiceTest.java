@@ -86,7 +86,7 @@ class ExerciseServiceTest {
         when(exerciseTypeRepository.findByName("SQUAT")).thenReturn(Optional.of(exerciseType));
 
         // When
-        exerciseService.saveRecord(request, userId);
+        exerciseService.saveRecord(request);
 
         // Then
         verify(exerciseRecordRepository, times(1)).save(any(ExerciseRecord.class));
@@ -107,7 +107,7 @@ class ExerciseServiceTest {
 
         ExerciseRecord record = new ExerciseRecord();
         record.setRecordId(recordId);
-        record.setUserId(member);
+        record.setUser(member);
 
         when(exerciseRecordRepository.findById(recordId)).thenReturn(Optional.of(record));
 
@@ -133,7 +133,7 @@ class ExerciseServiceTest {
 
         ExerciseRecord record = new ExerciseRecord();
         record.setRecordId(recordId);
-        record.setUserId(member);
+        record.setUser(member);
 
         ExerciseSet exerciseSet = new ExerciseSet();
         exerciseSet.setSetId(setId);
@@ -163,7 +163,7 @@ class ExerciseServiceTest {
 
         ExerciseRecord record = new ExerciseRecord();
         record.setRecordId(recordId);
-        record.setUserId(member);
+        record.setUser(member);
 
         ExerciseSet exerciseSet = new ExerciseSet();
         exerciseSet.setSetId(setId);
