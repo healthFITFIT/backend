@@ -1,12 +1,11 @@
 package com.fitfit.server.api.user.controller;
 
-
+import com.fitfit.server.api.user.dto.UserData;
 import com.fitfit.server.api.user.service.OAuthService;
 import com.fitfit.server.global.exception.ApiResponse;
 import com.fitfit.server.global.exception.CustomException;
 import com.fitfit.server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +27,10 @@ public class OAuthController {
         String idToken = request.get("idToken");
         try {
             Map<String, Object> userDetails = oAuthService.authenticateUser(idToken);
-            return ResponseEntity.ok(ApiResponse.success(userDetails));
+            String jwtToken = (String) userDetails.get("jwt_token");
+            UserData userData = (UserData) userDetails.get("userData");
+
+            return ResponseEntity.ok(ApiResponse.success(jwtToken, userData));
         } catch (IllegalArgumentException e) {
             ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.UNAUTHORIZED, "승인되지 않은 접근입니다."));
             return ResponseEntity.status(ErrorCode.UNAUTHORIZED.getHttpStatus()).body(response);
@@ -37,6 +39,7 @@ public class OAuthController {
             return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
         }
     }
+
 
     @PostMapping("/token")
     public ResponseEntity<?> getAccessToken(@RequestBody String accessToken) {

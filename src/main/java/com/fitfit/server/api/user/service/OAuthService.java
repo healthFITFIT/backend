@@ -1,6 +1,7 @@
 package com.fitfit.server.api.user.service;
 
 import com.fitfit.server.api.user.Member;
+import com.fitfit.server.api.user.dto.UserData;
 import com.fitfit.server.api.user.repository.MemberRepository;
 import com.fitfit.server.global.auth.JwtTokenUtil;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
@@ -57,17 +58,18 @@ public class OAuthService {
 
             log.info("Google OAuth: email = {}", email);
 
-            // 이메일로 회원 조회
             Member member = memberRepository.findByEmail(email)
-                    .orElseGet(() -> registerNewUser(email, name, pictureUrl)); // 비회원인 경우 회원가입
+                    .orElseGet(() -> registerNewUser(email, name, pictureUrl));
 
-            // JWT 토큰 발급
             String jwtToken = jwtTokenUtil.generateToken(email);
 
-            Map<String, Object> userDetails = new HashMap<>();
-            userDetails.put("jwt_token", jwtToken);
+            UserData userData = new UserData(name, email, pictureUrl);
 
-            return userDetails;
+            Map<String, Object> response = new HashMap<>();
+            response.put("jwt_token", jwtToken);
+            response.put("userData", userData);
+
+            return response;
         } else {
             throw new IllegalArgumentException("Invalid ID token.");
         }

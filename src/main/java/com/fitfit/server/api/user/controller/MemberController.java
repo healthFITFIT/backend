@@ -24,7 +24,7 @@ public class MemberController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> registerUser(@RequestBody @Valid MemberSignUpRequest request) {
         memberService.signUp(request);
-        return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(null, "회원가입이 완료되었습니다."));
     }
 
     // 회원 정보 조회
@@ -38,7 +38,7 @@ public class MemberController {
 
         try {
             MemberResponse userResponse = memberService.getUserDetails(email);
-            return ResponseEntity.ok(ApiResponse.success(userResponse));
+            return ResponseEntity.ok(ApiResponse.success(null, userResponse)); // jwt는 null로 설정
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(ApiResponse.fail("사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
         }
@@ -48,7 +48,6 @@ public class MemberController {
     @PatchMapping("/update")
     public ResponseEntity<ApiResponse<String>> updateUser(@Valid @RequestBody MemberUpdateRequest request,
                                                           @RequestHeader("Authorization") String authorizationHeader) {
-
         String token = authorizationHeader.replace("Bearer ", "");
         String email = jwtTokenUtil.extractUsername(token);
         if (email == null) {
@@ -56,7 +55,7 @@ public class MemberController {
         }
 
         memberService.updateUser(email, request);
-        return ResponseEntity.ok(ApiResponse.success("회원정보가 수정되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(null, "회원정보가 수정되었습니다.")); // jwt는 null로 설정
     }
 
     // 회원 탈퇴
@@ -69,7 +68,7 @@ public class MemberController {
         }
 
         memberService.deleteUser(email);
-        return ResponseEntity.ok(ApiResponse.success("회원탈퇴가 완료되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(null, "회원탈퇴가 완료되었습니다.")); // jwt는 null로 설정
     }
 
     // 로그아웃
@@ -77,6 +76,6 @@ public class MemberController {
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
         memberService.logout(token);
-        return ResponseEntity.ok(ApiResponse.success("로그아웃 완료되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(null, "로그아웃 완료되었습니다.")); // jwt는 null로 설정
     }
 }
