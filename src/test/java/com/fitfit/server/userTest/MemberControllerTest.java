@@ -47,12 +47,11 @@ class MemberControllerTest {
 
         mockMvc.perform(post("/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("UTF-8")  // UTF-8 인코딩 설정
+                        .characterEncoding("UTF-8")
                         .content("{\"email\":\"test@example.com\", \"password\":\"password\", \"name\":\"Test User\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))  // success 필드가 true인지 확인
-                .andExpect(jsonPath("$.data").value("회원가입이 완료되었습니다."))  // data 필드가 예상한 메시지인지 확인
-                .andExpect(jsonPath("$.error").value(nullValue()));  // error 필드가 null인지 확인
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.userData").value("회원가입이 완료되었습니다."))
+                .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).signUp(any(MemberSignUpRequest.class));
     }
@@ -79,7 +78,7 @@ class MemberControllerTest {
                         .content("{\"mail\":\"" + email + "\", \"updatedUser\":\"Updated User\", \"name\":\"Updated User\", \"userProfile\":\"New Profile\", \"b\":true}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value("회원정보가 수정되었습니다."))
+                .andExpect(jsonPath("$.userData").value("회원정보가 수정되었습니다."))
                 .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).updateUser(eq(email), any(MemberUpdateRequest.class));
@@ -96,7 +95,8 @@ class MemberControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value("회원탈퇴가 완료되었습니다."))
+                .andExpect(jsonPath("$.jwt_token").value(nullValue()))
+                .andExpect(jsonPath("$.userData").value("회원탈퇴가 완료되었습니다."))
                 .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).deleteUser(eq(email));
@@ -110,7 +110,8 @@ class MemberControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value("로그아웃 완료되었습니다."))
+                .andExpect(jsonPath("$.jwt_token").value(nullValue()))
+                .andExpect(jsonPath("$.userData").value("로그아웃 완료되었습니다."))
                 .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).logout(eq(token));
