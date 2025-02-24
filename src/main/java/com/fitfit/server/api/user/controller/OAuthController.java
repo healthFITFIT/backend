@@ -27,7 +27,6 @@ public class OAuthController {
     public ResponseEntity<ApiResponse<?>> validateIdToken(@RequestBody Map<String, String> request) {
         String idToken = request.get("idToken");
         try {
-            // 인증된 사용자의 정보를 받아오고 JWT를 발급
             Map<String, Object> userDetails = oAuthService.authenticateUser(idToken);
             return ResponseEntity.ok(ApiResponse.success(userDetails));
         } catch (IllegalArgumentException e) {

@@ -65,10 +65,6 @@ public class OAuthService {
             String jwtToken = jwtTokenUtil.generateToken(email);
 
             Map<String, Object> userDetails = new HashMap<>();
-            userDetails.put("userId", member.getUserId());
-            userDetails.put("email", email);
-            userDetails.put("name", name);
-            userDetails.put("pictureUrl", pictureUrl);
             userDetails.put("jwt_token", jwtToken);
 
             return userDetails;
