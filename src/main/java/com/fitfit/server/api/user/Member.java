@@ -85,4 +85,7 @@ public class Member {
         return name;
     }
 
+    public String getUserProfile() {
+        return userProfile;
+    }
 }
