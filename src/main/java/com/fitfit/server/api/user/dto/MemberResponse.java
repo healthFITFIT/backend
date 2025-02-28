@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class MemberResponse {
-    private Long userId;
+    private Long user_id;
     private String email;
     private String name;
     private String role;
-    private String userProfile;
+    private String user_profile_url;
 }

@@ -15,7 +15,7 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="userId")
+    @Column(name="user_id")
     private Long userId;
 
     @Column(nullable = false, unique = true)
@@ -31,7 +31,7 @@ public class Member {
     private String userProfile;
 
     @Column(nullable = false)
-    private boolean serviceAccept = true; // 기본값 true로 설정
+    private boolean serviceAccept = true;
 
     @Column(nullable = false)
     private LocalDate userRegisteredAt;

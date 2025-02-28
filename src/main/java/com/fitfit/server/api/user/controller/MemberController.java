@@ -68,7 +68,7 @@ public class MemberController {
         }
 
         memberService.deleteUser(email);
-        return ResponseEntity.ok(ApiResponse.success(null, "회원탈퇴가 완료되었습니다.")); // jwt는 null로 설정
+        return ResponseEntity.ok(ApiResponse.success(null, "회원탈퇴가 완료되었습니다."));
     }
 
     // 로그아웃
@@ -76,6 +76,6 @@ public class MemberController {
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
         memberService.logout(token);
-        return ResponseEntity.ok(ApiResponse.success(null, "로그아웃 완료되었습니다.")); // jwt는 null로 설정
+        return ResponseEntity.ok(ApiResponse.success(null, "로그아웃 완료되었습니다."));
     }
 }

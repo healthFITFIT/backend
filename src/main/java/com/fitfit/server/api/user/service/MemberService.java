@@ -37,8 +37,8 @@ public class MemberService {
                     return newUser;
                 });
 
-        String accessToken = (String) userDetails.get("accessToken");
-        userDetails.put("accessToken", accessToken);
+        String accessToken = (String) userDetails.get("access_token");
+        userDetails.put("access_token", accessToken);
 
         return userDetails;
     }
@@ -80,10 +80,9 @@ public class MemberService {
         Member user = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 기존의 회원 정보를 수정만 함
         user.updateUser(request);
 
-        // 데이터베이스에 즉시 반영
+
         memberRepository.saveAndFlush(user);  // saveAndFlush()를 사용하여 즉시 반영
     }
 
