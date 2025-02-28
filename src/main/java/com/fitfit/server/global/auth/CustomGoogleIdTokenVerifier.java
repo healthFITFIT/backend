@@ -15,6 +15,6 @@ public class CustomGoogleIdTokenVerifier {
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
 
     public GoogleIdToken verify(String idTokenString) throws GeneralSecurityException, IOException {
-        return googleIdTokenVerifier.verify(idTokenString); // GoogleIdTokenVerifier 사용
+        return googleIdTokenVerifier.verify(idTokenString);
     }
 }

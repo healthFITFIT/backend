@@ -24,11 +24,11 @@ public class OAuthController {
 
     @PostMapping("/validate")
     public ResponseEntity<ApiResponse<?>> validateIdToken(@RequestBody Map<String, String> request) {
-        String idToken = request.get("idToken");
+        String idToken = request.get("id_token");
         try {
             Map<String, Object> userDetails = oAuthService.authenticateUser(idToken);
-            String jwtToken = (String) userDetails.get("jwt_token");
-            UserData userData = (UserData) userDetails.get("userData");
+            String jwtToken = (String) userDetails.get("jwt");
+            UserData userData = (UserData) userDetails.get("user_data");
 
             return ResponseEntity.ok(ApiResponse.success(jwtToken, userData));
         } catch (IllegalArgumentException e) {
@@ -39,7 +39,6 @@ public class OAuthController {
             return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
         }
     }
-
 
     @PostMapping("/token")
     public ResponseEntity<?> getAccessToken(@RequestBody String accessToken) {

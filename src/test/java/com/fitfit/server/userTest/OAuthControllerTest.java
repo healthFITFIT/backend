@@ -2,6 +2,8 @@ package com.fitfit.server.userTest;
 
 import com.fitfit.server.api.user.service.IdTokenVerify;
 import com.fitfit.server.api.user.service.OAuthService;
+import com.fitfit.server.global.exception.CustomException;
+import com.fitfit.server.global.exception.ErrorCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -49,9 +51,10 @@ class OAuthControllerTest {
 
         mockMvc.perform(post("/oauth/validate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\": \"validToken\"}")) // JSON 형식 유지
+                        .content("{\"idToken\": \"validToken\"}"))
                 .andExpect(status().isOk());
     }
+
 
     @Test
     public void validateTokenTest_unauthorized() throws Exception {
@@ -60,10 +63,9 @@ class OAuthControllerTest {
 
         mockMvc.perform(post("/oauth/validate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\": \"invalidToken\"}"))
-                .andExpect(jsonPath("$.error.message").value("승인되지 않은 접근입니다."));
+                        .content("{\"id_token\": \"invalidToken\"}"))
+                .andExpect(jsonPath("$.error.message").value("승인되지 않은 접근입니다.")); // error.message 필드 확인
     }
-
 
     @Test
     void validateTokenTest_internalError() throws Exception {
@@ -72,7 +74,7 @@ class OAuthControllerTest {
 
         mockMvc.perform(post("/oauth/validate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\": \"validToken\"}"))
+                        .content("{\"id_token\": \"validToken\"}"))
                 .andExpect(jsonPath("$.error.message").value("서버 내부 오류입니다."));
     }
 

@@ -2,6 +2,7 @@ package com.fitfit.server.global.exception;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,14 +23,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.NOT_FOUND_END_POINT.getHttpStatus()).body(response);
     }
 
-    @ExceptionHandler(value = {CustomException.class})
-    public ResponseEntity<ApiResponse<?>> handleCustomException(CustomException e) {
-        log.error("handleCustomException() in GlobalExceptionHandler throw CustomException : {}", e.getMessage());
-        ApiResponse<?> response = ApiResponse.fail(e);
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(response);
-    }
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ApiResponse<?>> handleCustomException(CustomException ex) {
+        ExceptionDto exceptionDto = new ExceptionDto(ex.getErrorCode().getHttpStatus().value(), ex.getMessage());
 
-    // GeneralSecurityException 및 IOException 처리 추가
+        ApiResponse<?> response = new ApiResponse<>(false, null, null, exceptionDto);
+
+        HttpStatus status = HttpStatus.valueOf(ex.getErrorCode().getHttpStatus().value());
+        return new ResponseEntity<>(response, status);
+    }
     @ExceptionHandler(value = {GeneralSecurityException.class, IOException.class})
     public ResponseEntity<ApiResponse<?>> handleSecurityAndIoExceptions(Exception e) {
         log.error("GeneralSecurityException or IOException in GlobalExceptionHandler: {}", e.getMessage());
@@ -45,6 +47,8 @@ public class GlobalExceptionHandler {
         ApiResponse<?> response = ApiResponse.fail(new CustomException(ErrorCode.INTERNAL_SERVER_ERROR,e.getMessage()));
         return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
     }
+
+
 
 
 }

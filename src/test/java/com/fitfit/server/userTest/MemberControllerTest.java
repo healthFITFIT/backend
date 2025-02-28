@@ -50,7 +50,7 @@ class MemberControllerTest {
                         .characterEncoding("UTF-8")
                         .content("{\"email\":\"test@example.com\", \"password\":\"password\", \"name\":\"Test User\"}"))
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.userData").value("회원가입이 완료되었습니다."))
+                .andExpect(jsonPath("$.user_data").value("회원가입이 완료되었습니다."))
                 .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).signUp(any(MemberSignUpRequest.class));
@@ -78,7 +78,7 @@ class MemberControllerTest {
                         .content("{\"mail\":\"" + email + "\", \"updatedUser\":\"Updated User\", \"name\":\"Updated User\", \"userProfile\":\"New Profile\", \"b\":true}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.userData").value("회원정보가 수정되었습니다."))
+                .andExpect(jsonPath("$.user_data").value("회원정보가 수정되었습니다."))
                 .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).updateUser(eq(email), any(MemberUpdateRequest.class));
@@ -95,8 +95,8 @@ class MemberControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.jwt_token").value(nullValue()))
-                .andExpect(jsonPath("$.userData").value("회원탈퇴가 완료되었습니다."))
+                .andExpect(jsonPath("$.jwt").value(nullValue()))
+                .andExpect(jsonPath("$.user_data").value("회원탈퇴가 완료되었습니다."))
                 .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).deleteUser(eq(email));
@@ -110,8 +110,8 @@ class MemberControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.jwt_token").value(nullValue()))
-                .andExpect(jsonPath("$.userData").value("로그아웃 완료되었습니다."))
+                .andExpect(jsonPath("$.jwt").value(nullValue()))
+                .andExpect(jsonPath("$.user_data").value("로그아웃 완료되었습니다."))
                 .andExpect(jsonPath("$.error").value(nullValue()));
 
         verify(memberService, times(1)).logout(eq(token));

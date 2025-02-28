@@ -66,8 +66,8 @@ public class OAuthService {
             UserData userData = new UserData(name, email, pictureUrl);
 
             Map<String, Object> response = new HashMap<>();
-            response.put("jwt_token", jwtToken);
-            response.put("userData", userData);
+            response.put("jwt", jwtToken);
+            response.put("user_data", userData);
 
             return response;
         } else {
