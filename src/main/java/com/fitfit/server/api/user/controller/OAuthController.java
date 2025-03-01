@@ -40,13 +40,4 @@ public class OAuthController {
         }
     }
 
-    @PostMapping("/token")
-    public ResponseEntity<?> getAccessToken(@RequestBody String accessToken) {
-        try {
-            Map<String, Object> tokenResponse = oAuthService.getAccessTokenFromAuthCode(accessToken);
-            return ResponseEntity.ok(tokenResponse);
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "Access token error: " + e.getMessage());
-        }
-    }
 }

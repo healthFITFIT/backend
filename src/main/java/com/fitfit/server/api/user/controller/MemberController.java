@@ -38,7 +38,7 @@ public class MemberController {
 
         try {
             MemberResponse userResponse = memberService.getUserDetails(email);
-            return ResponseEntity.ok(ApiResponse.success(null, userResponse)); // jwt는 null로 설정
+            return ResponseEntity.ok(ApiResponse.success(null, userResponse));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(ApiResponse.fail("사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST));
         }
@@ -55,7 +55,7 @@ public class MemberController {
         }
 
         memberService.updateUser(email, request);
-        return ResponseEntity.ok(ApiResponse.success(null, "회원정보가 수정되었습니다.")); // jwt는 null로 설정
+        return ResponseEntity.ok(ApiResponse.success(null, "회원정보가 수정되었습니다."));
     }
 
     // 회원 탈퇴

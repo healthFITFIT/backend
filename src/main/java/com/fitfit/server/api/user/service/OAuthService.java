@@ -92,22 +92,5 @@ public class OAuthService {
         return memberRepository.save(newUser);
     }
 
-    public Map<String, Object> getAccessTokenFromAuthCode(String authCode) throws IOException {
-        log.info("clientId: {}", clientId);
-        log.info("clientSecret: {}", clientSecret);
 
-        GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                HTTP_TRANSPORT, JSON_FACTORY,
-                clientId, clientSecret,
-                authCode, redirectUri)
-                .execute();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("access_token", tokenResponse.getAccessToken());
-        response.put("id_token", tokenResponse.getIdToken());
-        response.put("refresh_token", tokenResponse.getRefreshToken());
-        response.put("expires_in", tokenResponse.getExpiresInSeconds());
-
-        return response;
-    }
 }
