@@ -33,7 +33,7 @@ public class ExerciseService {
     private final JwtTokenUtil jwtTokenUtil;
 
     @Transactional
-    public void saveRecord(String token, ExerciseRecordRequest request) {
+    public SaveRecordResponse saveRecord(String token, ExerciseRecordRequest request) {
         Long userId = jwtTokenUtil.getUserIdFromToken(token);
 
         Member member = memberRepository.findById(userId)
@@ -42,10 +42,14 @@ public class ExerciseService {
         ExerciseRecord exerciseRecord = new ExerciseRecord(member, request.getDuration(), request.getDate());
         exerciseRecordRepository.save(exerciseRecord);
 
+        SaveRecordResponse reponse = new SaveRecordResponse();
+        List<ExerciseResponse> exerciseList = new ArrayList<>();
 
         for (ExerciseRequest exerciseRequest : request.getExercises()) {
             ExerciseType exerciseType = exerciseTypeRepository.findByName(exerciseRequest.getName())
                     .orElseThrow(() -> new RuntimeException("ExerciseType not found"));
+
+            List<SetResponse> setList = new ArrayList<>();
 
             for (SetRequest setRequest : exerciseRequest.getSets()) {
                 ExerciseSet exerciseSet = new ExerciseSet();
@@ -55,8 +59,21 @@ public class ExerciseService {
                 exerciseSet.setWeight(setRequest.getWeight());
 
                 exerciseSetRepository.save(exerciseSet);
+
+                SetResponse setResponse = new SetResponse();
+                setResponse.setSetId(exerciseSet.getSetId());
+                setList.add(setResponse);
             }
+
+            ExerciseResponse exerciseResponse = new ExerciseResponse();
+            exerciseResponse.setName(exerciseRequest.getName());
+            exerciseList.add(exerciseResponse);
         }
+
+        reponse.setRecordId(exerciseRecord.getRecordId());
+        reponse.setExercises(exerciseList);
+
+        return reponse;
     }
 
     @Transactional
@@ -110,7 +127,7 @@ public class ExerciseService {
         exerciseSetRepository.save(exerciseSet);
     }
 
-    public ExerciseRecordResponse getRecordByrecordId(String token, Long recordId) {
+    public ExerciseRecordDetailsResponse getRecordByrecordId(String token, Long recordId) {
         Long userId = jwtTokenUtil.getUserIdFromToken(token);
 
         Member member = memberRepository.findById(userId)
@@ -119,31 +136,32 @@ public class ExerciseService {
         ExerciseRecord record = exerciseRecordRepository.findByRecordId(recordId)
                 .orElseThrow(() -> new RuntimeException("ExerciseRecord not found"));
 
+
         List<ExerciseSet> sets = exerciseSetRepository.findExerciseSetsByRecordId(record.getRecordId());
 
-        ExerciseRecordResponse response = new ExerciseRecordResponse();
+        ExerciseRecordDetailsResponse response = new ExerciseRecordDetailsResponse();
         response.setRecordId(record.getRecordId());
+        response.setDuration(record.getDuration());
 
-        Map<String, ExerciseResponse> exerciseMap = new HashMap<>();
+        Map<String, ExerciseDetails> exerciseMap = new HashMap<>();
 
         for (ExerciseSet s : sets) {
             String exerciseName = s.getExerciseType().getName().name();
 
-            ExerciseResponse exerciseResponse = exerciseMap.getOrDefault(exerciseName, new ExerciseResponse());
-            exerciseResponse.setName(exerciseName);
+            ExerciseDetails exerciseDetails = exerciseMap.getOrDefault(exerciseName, new ExerciseDetails());
+            exerciseDetails.setName(exerciseName);
 
-            SetResponse setResponse = new SetResponse();
-            setResponse.setSetId(s.getSetId());
+            SetDetails setDetails = new SetDetails();
 
-            if (exerciseResponse.getSets() == null) {
-                exerciseResponse.setSets(new ArrayList<>());
+            if (exerciseDetails.getSets() == null) {
+                exerciseDetails.setSets(new ArrayList<>());
             }
-            exerciseResponse.getSets().add(setResponse);
+            exerciseDetails.getSets().add(setDetails);
 
-            exerciseMap.put(exerciseName, exerciseResponse);
+            exerciseMap.put(exerciseName, exerciseDetails);
         }
 
-        response.setExercises(new ArrayList<>(exerciseMap.values()));
+        response.setExerciseRecords(new ArrayList<>(exerciseMap.values()));
 
         return response;
     }
