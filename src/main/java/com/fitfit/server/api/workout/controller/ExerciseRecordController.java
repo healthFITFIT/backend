@@ -1,6 +1,8 @@
 package com.fitfit.server.api.workout.controller;
 
+import com.fitfit.server.api.workout.dto.ExerciseRecordDetailsResponse;
 import com.fitfit.server.api.workout.dto.ExerciseRecordRequest;
+import com.fitfit.server.api.workout.dto.SaveRecordResponse;
 import com.fitfit.server.api.workout.service.ExerciseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,22 +15,37 @@ import org.springframework.web.bind.annotation.*;
 public class ExerciseRecordController {
     private final ExerciseService exerciseService;
 
-    @PostMapping
-    public ResponseEntity<String> saveRecord(@RequestBody ExerciseRecordRequest request) {
+    @PostMapping("/save")
+    public ResponseEntity<?> saveRecord(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody ExerciseRecordRequest request) {
+        String token = authorizationHeader.replace("Bearer ", "");
+
         try {
-            exerciseService.saveRecord(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Exercise record saved successfully");
+            SaveRecordResponse response = exerciseService.saveRecord(token, request);
+            return ResponseEntity.ok(response);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save exercise record");
         }
     }
 
-    @DeleteMapping("/{recordId}")
+    @DeleteMapping("/delete/{recordId}")
     public ResponseEntity<String> deleteExerciseRecord(
-            @PathVariable Long recordId,
-            @RequestParam Long userId
-    ) {
-        exerciseService.deleteRecord(recordId, userId);
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable Long recordId) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        exerciseService.deleteRecord(token, recordId);
         return ResponseEntity.ok("Exercise record deleted successfully");
     }
+
+
+    @GetMapping("/{recordId}")
+    public ExerciseRecordDetailsResponse getRecordByDate(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable Long recordId) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        return exerciseService.getRecordByrecordId(token, recordId);
+    }
+
 }
+

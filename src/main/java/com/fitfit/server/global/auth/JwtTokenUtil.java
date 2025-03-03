@@ -1,5 +1,7 @@
 package com.fitfit.server.global.auth;
 
+import com.fitfit.server.api.user.repository.MemberRepository;
+import com.fitfit.server.api.user.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,11 +12,15 @@ import java.util.Date;
 import java.util.function.Function;
 
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenUtil {
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -62,5 +68,18 @@ public class JwtTokenUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    // JWT 토큰에서 userId 추출
+    public Long getUserIdFromToken(String token) {
+        // 이메일 추출
+        String email = extractUsername(token);
+
+        // 이메일로 Member 조회
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // userId 반환
+        return member.getUserId();
     }
 }

@@ -16,13 +16,16 @@ public class ExerciseSetController {
     private final ExerciseService exerciseService;
 
     //세트 삭제
-    @DeleteMapping("/{setId}")
+    @DeleteMapping("/delete/{setId}")
     public ResponseEntity<String> deleteExerciseSet(
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable Long recordId,
-            @PathVariable Long setId,
-            @RequestParam Long userId) {
+            @PathVariable Long setId) {
+
+        String token = authorizationHeader.replace("Bearer ", "");
+
         try {
-            exerciseService.deleteSet(recordId, setId, userId);
+            exerciseService.deleteSet(token, recordId, setId);
             return ResponseEntity.ok("Exercise set deleted successfully");
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -33,14 +36,17 @@ public class ExerciseSetController {
         }
     }
 
-    @PutMapping("/{setId}")
+    @PutMapping("/update/{setId}")
     public ResponseEntity<String> updateExerciseSet(
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable Long recordId,
             @PathVariable Long setId,
-            @RequestBody SetRequest request,
-            @RequestParam Long userId) {
+            @RequestBody SetRequest request) {
+
+        String token = authorizationHeader.replace("Bearer ", "");
+
         try {
-            exerciseService.updateSet(setId, recordId, userId, request);
+            exerciseService.updateSet(token, setId, recordId, request);
             return ResponseEntity.ok("Exercise set updated successfully");
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()); // 세트가 존재하지 않음

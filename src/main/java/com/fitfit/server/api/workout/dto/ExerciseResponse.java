@@ -1,6 +1,5 @@
 package com.fitfit.server.api.workout.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ExerciseRequest {
+public class ExerciseResponse {
     private String name;
-    private List<SetRequest> sets;
+    private List<SetResponse> sets;
 }

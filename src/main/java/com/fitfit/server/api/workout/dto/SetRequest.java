@@ -1,5 +1,6 @@
 package com.fitfit.server.api.workout.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,5 +8,5 @@ import lombok.Setter;
 @Setter
 public class SetRequest {
     private int reps;
-    private Float weight;
+    private float weight;
 }

@@ -18,6 +18,3 @@ public class ExerciseType {
     private ExerciseName name;
 }
 
-enum ExerciseName {
-    SQUAT, PULL_UP, PUSH_UP, LATERAL_RAISE;
-}
