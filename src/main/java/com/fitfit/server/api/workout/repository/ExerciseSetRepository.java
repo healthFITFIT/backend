@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface ExerciseSetRepository extends JpaRepository<ExerciseSet, Long> {
     List<ExerciseSet> findExerciseSetsByRecordId(Long recordId);
-    List<ExerciseSet> findExerciseSetsByExerciseType(String exerciseType);
 }

@@ -9,7 +9,5 @@ import java.util.List;
 @Setter
 public class ExerciseRecordResponse {
     private Long recordId;
-    private LocalDate createdAt;
-    private Integer duration;
     private List<ExerciseResponse> exercises;
 }

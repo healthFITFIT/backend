@@ -13,9 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ExerciseRecordRepository extends JpaRepository<ExerciseRecord, Long> {
-    ExerciseRecord findByUserIdAndCreatedAt(Long userId, LocalDate createdAt);
-    ExerciseRecord findByRecordId(Long recordId);
+    Optional<ExerciseRecord> findByRecordId(Long recordId);
 
-    @Query("SELECT e FROM ExerciseRecord e WHERE e.user = :user")
-    List<ExerciseRecord> findByUser(@Param("user") Member user);
+    @Query("SELECT e FROM ExerciseRecord e WHERE e.user.userId = :userId")
+    List<ExerciseRecord> findByUserId(@Param("userId") Long userId);
 }

@@ -18,9 +18,13 @@ public class ExerciseRecordController {
     private final ExerciseService exerciseService;
 
     @PostMapping("/save")
-    public ResponseEntity<String> saveRecord(@RequestBody ExerciseRecordRequest request) {
+    public ResponseEntity<String> saveRecord(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody ExerciseRecordRequest request) {
+        String token = authorizationHeader.replace("Bearer ", "");
+
         try {
-            exerciseService.saveRecord(request);
+            exerciseService.saveRecord(token, request);
             return ResponseEntity.status(HttpStatus.CREATED).body("Exercise record saved successfully");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save exercise record");
@@ -29,10 +33,10 @@ public class ExerciseRecordController {
 
     @DeleteMapping("/delete/{recordId}")
     public ResponseEntity<String> deleteExerciseRecord(
-            @PathVariable Long recordId,
-            @RequestParam Long userId
-    ) {
-        exerciseService.deleteRecord(recordId, userId);
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable Long recordId) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        exerciseService.deleteRecord(token, recordId);
         return ResponseEntity.ok("Exercise record deleted successfully");
     }
 

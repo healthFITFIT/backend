@@ -6,6 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SetResponse {
-    private Integer reps;
-    private Float weight;
+    private Long setId;
 }

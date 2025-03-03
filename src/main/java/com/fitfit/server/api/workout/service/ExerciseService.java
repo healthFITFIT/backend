@@ -9,6 +9,7 @@ import com.fitfit.server.api.workout.dto.*;
 import com.fitfit.server.api.workout.repository.ExerciseRecordRepository;
 import com.fitfit.server.api.workout.repository.ExerciseSetRepository;
 import com.fitfit.server.api.workout.repository.ExerciseTypeRepository;
+import com.fitfit.server.global.auth.JwtTokenUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,10 +30,13 @@ public class ExerciseService {
     private final ExerciseSetRepository exerciseSetRepository;
     private final ExerciseTypeRepository exerciseTypeRepository;
     private final MemberRepository memberRepository;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Transactional
-    public void saveRecord(ExerciseRecordRequest request) {
-        Member member = memberRepository.findById(request.getUserId())
+    public void saveRecord(String token, ExerciseRecordRequest request) {
+        Long userId = jwtTokenUtil.getUserIdFromToken(token);
+
+        Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         ExerciseRecord exerciseRecord = new ExerciseRecord(member, request.getDuration(), request.getDate());
@@ -56,7 +60,9 @@ public class ExerciseService {
     }
 
     @Transactional
-    public void deleteRecord(Long recordId, Long userId) {
+    public void deleteRecord(String token, Long recordId) {
+        Long userId = jwtTokenUtil.getUserIdFromToken(token);
+
         ExerciseRecord record = exerciseRecordRepository.findById(recordId)
                 .orElseThrow(() -> new RuntimeException("ExerciseRecord not found"));
 
@@ -67,7 +73,9 @@ public class ExerciseService {
         exerciseRecordRepository.delete(record);
     }
 
-    public void deleteSet(Long setId, Long recordId, Long userId) {
+    public void deleteSet(String token, Long setId, Long recordId) {
+        Long userId = jwtTokenUtil.getUserIdFromToken(token);
+
         ExerciseSet exerciseSet = exerciseSetRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException("Exercise set not found"));
 
@@ -82,7 +90,9 @@ public class ExerciseService {
         exerciseSetRepository.delete(exerciseSet);
     }
 
-    public void updateSet(Long setId, Long recordId, Long userId, SetRequest request) {
+    public void updateSet(String token, Long setId, Long recordId, SetRequest request) {
+        Long userId = jwtTokenUtil.getUserIdFromToken(token);
+
         ExerciseSet exerciseSet = exerciseSetRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException("Exercise set not found"));
 
@@ -100,17 +110,19 @@ public class ExerciseService {
         exerciseSetRepository.save(exerciseSet);
     }
 
-    public ExerciseRecordResponse getRecordByDate(Long userId, Long recordId) {
+    public ExerciseRecordResponse getRecordByrecordId(String token, Long recordId) {
+        Long userId = jwtTokenUtil.getUserIdFromToken(token);
+
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ExerciseRecord record = exerciseRecordRepository.findByRecordId(recordId);
+        ExerciseRecord record = exerciseRecordRepository.findByRecordId(recordId)
+                .orElseThrow(() -> new RuntimeException("ExerciseRecord not found"));
+
         List<ExerciseSet> sets = exerciseSetRepository.findExerciseSetsByRecordId(record.getRecordId());
 
         ExerciseRecordResponse response = new ExerciseRecordResponse();
         response.setRecordId(record.getRecordId());
-        response.setCreatedAt(record.getCreatedAt());
-        response.setDuration(record.getDuration());
 
         Map<String, ExerciseResponse> exerciseMap = new HashMap<>();
 
@@ -121,8 +133,7 @@ public class ExerciseService {
             exerciseResponse.setName(exerciseName);
 
             SetResponse setResponse = new SetResponse();
-            setResponse.setReps(s.getReps());
-            setResponse.setWeight(s.getWeight());
+            setResponse.setSetId(s.getSetId());
 
             if (exerciseResponse.getSets() == null) {
                 exerciseResponse.setSets(new ArrayList<>());
